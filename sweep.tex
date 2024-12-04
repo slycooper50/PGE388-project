@@ -1,0 +1,351 @@
+%\documentclass[subscriptcorrection,upint,varvw,barcolor=BrickRed,
+%mathalfa=cal=euler,balance,hyphenate,pdf-a,nocopyright]{asmejour} 
+
+\documentclass[barcolor=BrickRed,nocopyright,nolists]{asmejour} 
+%\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{tikz} 
+\usepackage{tikz-layers} 
+\usetikzlibrary{calc, arrows.meta, intersections, patterns, positioning, shapes.misc, fadings, through,decorations.pathreplacing}
+\usetikzlibrary{positioning,shapes,arrows,backgrounds,external,fit,calc}
+\usetikzlibrary{shapes.geometric,shapes.arrows,fit,positioning}
+\usepackage{array}
+\usepackage{pdfpages}
+
+%%%%  pdf metadata  %%%%
+
+\hypersetup{
+	pdfauthor={Ahmad Assadeq},                       		   	
+	pdftitle={History Of Vector And Parallel Reservoir Simulation},                  	
+	pdfsubject = {History Of Vector Parallel Reservoir Simulation},	
+}
+
+%\JourName{Ms Report}
+\PreprintString{PGE383 Paper}[R]
+\PreprintString{}[L]
+
+\begin{document}
+
+\SetAuthorBlock{Ahmad Assadeq}{The University of Texas at Austin,\\
+   Hildebrand Department of Petroleum and Geosystems Engineering (UT PGE),\\
+   Austin, Texas, USA\\
+   aoa442@my.utexas.edu} 
+
+\title{Historical Overview Of Vector And Parallel Reservoir Simulation}
+
+\keywords{Parallel Reservoir Simulation, High Performance Computing, Massively Parallel, Multicore Computation.}
+   
+\begin{abstract}
+	The history of parallel reservoir simulation can be traced back to the 1990s, when the first 
+	parallel reservoir simulator, developed to run on Intel \texttt{iPSC/2} Hypercube Distributed-Memory Scientific Computer,
+	was invented by John Wheeler and Richard Smith\cite{spe19804}. Ever since, the advancements in High-Performace computing
+	influenced the developments of evermore scalable and parallel reservoir simulators. Newly developed parallel simulators
+	are capable of simulating complex multiphysics subsurface phenomena without sacrificing the detailed resolution of 
+	geological models.
+\end{abstract}
+							
+\maketitle %% This command creates the author/title/abstract block. Essential!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+The history of parallel reservoir simulation follows closely developments in high performance computing. The first milestone achieved in developing high performing, fast and robust reservoir simulation code was in the 1980s, when ARCO Oil and Gas Company started
+converting its simulator to run on the \texttt{CRAY-1S} vector processor machine\cite{spe10521}. Vector processing machines are considered among the first machines to be designed specifically for accelerating scientific computing. They work by performing arithmetic 
+operations collectively on a group of values (similar to the operation of applying a scalar multiplication on a vector). Today, the technology of computing machines have advanced greatly, and so accordingly did the technology of reservoir simulators.
+The technology of high performance computing machines is famously categorized using \textit{Flynn's Taxonomy}. In this classification, four major programming paradigms are recognized\cite{spe16020}:
+\begin{enumerate}
+	\item SISD: Single Instruction Single Data.
+	\item SIMD: Single Instruction Multiple Data.
+	\item MISD: Multiple Instruction Single Data.
+	\item MIMD: Multiple Instruction Multiple Data.
+\end{enumerate}
+The vector processing machines can be categorized under the \texttt{SIMD}, since one arithmetic operation is performed on multiple data simultaneously.
+The next milestone in the parallel reservoir simulation development happend in the 1990s, when Wheeler and Smith\cite{spe19804} developed the first parallel reservoir simulator.
+This parallel simulator was developed in a distributed-memory machine, the \texttt{Intel iPSC/2 Hypercube}. This machine contained 16-node (16 computing units that can be utilized).
+Since the 1990s, more parallel technologis were introduced to the reservoir simulation world, such as: \texttt{OpenMP} (Open Multi-Processing), \texttt{MPI} (Message Passing Interface) and most recently \texttt{GPU} (Graphics Processing Unit) programming.
+
+\subsection{Why Is Computing Power Important In Reservoir Simulation}
+The availability of powerful computing machines and technology is essential to model complex physical phenomena. Model sizes and complexity usually scale in accordance with available computing power.
+For large oil and gas reservoirs, computing power is essential to simulate any realistic physics, this large computing power helps reduce the upscaling effects needed to convert the built geomodel to the simulation model.
+Large computing power also enables the simulation of detailed reservoir heterogeneity, complex reservoir engineering workflows, complex and optimized well management strategies and compositional and reactionary transport processes.
+Moreover, the simulation time can be heavily reduced by the use of parallel computing technology\cite{spe142297}. Simulation time is an important factor that effects the reservoir engineer workflow and the electrical power consumption of the
+computing clusters.
+
+\subsection{The Timeline Of Parallel Reservoir Simulation}
+The history, present and future of parallel reservoir simulation can be summarized in figure (\ref{timeline}). The paper will discuss each era in brief detail, and will go through advantages that took place in each era.
+\begin{figure}[h]
+	\input{timeline.tikz}
+	\caption{Timeline Of High Performing Reservoir Simulators.}
+	\label{timeline}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Vector Processing Machines Era}
+The 1980s was the decade of Vector Processing Reservoir Simulators. Some of the most important developments, related to reservoir simulation, on these machines are:
+\begin{itemize}
+	\item Simulation of Prudhoe Bay field using the \texttt{STAR-100}\cite{spe8330}.
+	\item Simulation of 3D, three-phase, black-oil models on \texttt{CYBER 203}\cite{spe9644}.
+	\item Vectorization of \textit{D4 Gaussian Elimination} and \textit{Successive Overrelaxation} on \texttt{STAR-100} and \texttt{CYBER 203}\cite{spe7675}.
+	\item ARCO Oil and Gas Company Simulates both black-oil and compositional flow on \texttt{CRAY-1S}\cite{spe10521}.
+\end{itemize}
+Vectorization is the process by which CPUs operate on chunks of data collectively, see figure (\ref{vec}). 
+To utilize the vector processing capabilities of a CPU, the programmer must recognize parts of the code where an operation can be performed simultaneously on a collection of data.
+
+\begin{figure}[h]
+	\hspace*{-2cm}
+	\hbox{\input{vec.tikz}}
+	\caption{Comparison between performing arithmetic operations on a scalar versus vector machine.}
+	\label{vec}
+\end{figure}
+
+\subsection{The Prudhoe Bay Simulator}
+The incorporation of vector processing machines in the oil and gas industry started when Mrosovsky, Wong and Lampe\cite{spe8330} developed a large field reservoir simulator on the \texttt{STAR 100} vector machine.
+The physical dimensions of the Prudhoe Bay field are an area of $647500 \ m^{2}$ and thickness of $168 \ m$. The simulation model is divided into a reservoir region (Sadlerochit formation) and an aquifer region. The simulator developed handles the reservoir 
+region as a three-phase, fully implicit in pressure and saturation model. The aquifer region is handled, differently, as a two-dimensional, one-phase aquifer model.  The power of the vector machine was used
+in the solution of the linear system of equations constructed from the discretization of the flow equations using the finit-difference technique. The LSOR (Line Successive Overrelaxation) method is used for the solution of the system of equations. The
+Z-line variable ordering strategy is followed in this simulator. Since the model of the Prudhoe Bay reservoir utilized 12 layers, a total of $(12 \ gridblocks \times 3 \ phases) = 36$ variables are solved per vertical line. The vectorization of the problem was
+performed by collecting variables of a vertical line to form a vector. 
+
+\subsection{Nolen Vector Reservoir Simulator}
+James Nolen published work in 1981, that describes the development of a fully-implicit reservoir simulator that utilizes the power of vector processing machines\cite{spe9644}.
+The overall increase in performance reported in this simulator is a factor of $3.7$ when compared to the same computations carried on a scalar machine. The prominent feature of this work is the substantial
+vectorization of many components of the reservoir simulator. Some of the components this work presents for vectorization are:
+\begin{itemize}
+	\item \textbf{\texttt{IF} statements}: Conditional statements in the simulator can be replaced by vectors. Truth values are stored as $1$/$0$ in a vector.
+	\item \textbf{Data Reordering}: In parts of the simulator where data in a vector is to be reordered an index vector \texttt{J} is used to reorder effiecently:
+		\texttt{A(I) = B(J(I))}.
+	\item \textbf{Table Lookups}: Physical properties that are functions of pressure or other state variables are also vectorized.
+	\item \textbf{Linear Solver:} The linear solver of the resulting system is vectorized.
+\end{itemize}
+
+
+\subsection{Vectorization Of Linear Solvers}
+In 1981, James Nolen, et al.\cite{spe7675} published their work in vectorizing the linear solvers used in reservoir simulation at the time.
+The results published in their work gives promising performance improvement with factors as large as $54$.
+The linear solver is known to take most of the simulation time. Therefore, a concentrated effort to vectorize linear solver routines will
+improve overall performance, even if only the solver part of the simulator is vectorized. The work of Nolen, et al. describes an optimal vectorization of the \textit{Gaussian Elimination With D4 Ordering} method along with \textit{Successive Overrelaxation} method.
+The vectorization of the \textit{D4} ordering is optimally done by the replacement of inner-product operations by vector multiplications.
+Variants of the \textit{SOR} method differ based on the number of gridblocks treated simultaneously (point, line, two-line, plane SOR).
+The \textit{SOR} method was vectorized by renumbering the gridblocks, that is by changing the order of variables to change the structure of the matrix.
+This change of variables order enables the construction of longer vectors to be operated on inside the \textit{SOR} routines.
+
+\subsection{ARCO Vectorization Of A Reservoir Simulator}
+Another early attempt to improve performance of reservoir simulators using high performance computing technologies was the Killough and Levesque\cite{spe10521} effort to convert both of their simulation models, black-oil and compositional types,
+to the vector processing computer \texttt{CRAY-1S}. In the work of Killough\cite{spe10521}, the Strongly Implicit Solution technique was vectorized for the Black-Oil model along
+with vectorization for table lookups. The reported increase in performance in their work is about a factor of four in overall CPU time for heterogeneous models. Vectorization was also carried out on Jacobian matrix construction and
+explicit calculations of the saturation. The challenges encountered during this conversion were the need to understand some low level details of the \texttt{CRAY-1S}, in order to vectorize parts of the simulator. Vectorization of these parts were done
+using the \texttt{Cray Assembly Language}. Programming in a machine specific language endangers portability of code to other machines.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Advent Of Distributed-Memory Clusters}
+The 1990s was the decade that saw several distributed-memory reservoir simulators. Examples are:
+\begin{itemize}
+	\item \texttt{The Heterogeneous Element Processor (HEP)} (1987)\cite{spe16020}.
+	\item Application Of The \textit{Connection Machine} To The Buckley-Leverett Problem (1989)\cite{spe19121}.
+	\item \texttt{Intel iPSC/2 Hypercube} (1990)\cite{spe19804}.
+	\item \texttt{Intel iPSC/860 Hypercube} (1992)\cite{spe21208,spe6830}.
+	\item Development Of Implicit-Pressure Explicit-Saturation (IMPES) Simulator On \texttt{Connection Machine-2} (1992)\cite{spe21213}.
+	\item Parallel algorithm for \textit{Local Grid Refinement} on \texttt{CRAY X-MP} (1993)\cite{spe25258}.
+	\item Statoil and University Of Bergen Reservoir Simulator On \texttt{MasPar MP-2} (1995)\cite{spe29139}.
+	\item Amoco \texttt{Falcon} Simulator (1998)\cite{spe51969}.
+	\item Saudi Aramco First Parallel Simulator \texttt{POWERS} on \texttt{Connection Machine-5} (1996)\cite{spe51886}.
+	\item Saudi Aramco Second Parallel Simulator \texttt{GigaPOWERS} Tested On Different Hardware Platforms (2009)\cite{spe119272}.
+\end{itemize}
+
+It would be beneficial to give a brief description of two important standards used to implement parallelism in reservoir simulation. The two Application Programming Interfaces (APIs) are:
+\begin{enumerate}
+	\item \texttt{OpenMP API}: Open Multi-Processing Standard, used for creating shared memory parallel programs using threads.
+	\item \texttt{MPI API}: Message Passing Interface Standard, used for creating programs that run on several computing nodes and communicate through messages.
+\end{enumerate}
+
+\begin{itemize}
+	\item \textbf{OpenMP:} This standard was introduced in 1997\cite{rz}. The feature of this standard is that it provides an easy and quick way to introduce
+			       parallelism in a program. It is effective for parts of code that have excessive number of loops.
+			       The standard categorizes variables as either private or shared. Private variables are specific to the thread that declared the variable.
+			       While shared variables are visible and modifiable by all threads.
+			       For an illustration of this technique for shared memory parallelization see figure (\ref{openmp}).
+			       \begin{figure}[h]
+			       		\center\input{openmp.tikz}
+			       		\caption{OpenMP Multi-Platform, shared memory, Model.}
+			       		\label{openmp}
+			       \end{figure}
+			       The \texttt{OpenMP} standard parallelizes the code on a single node level, therefore the scalability of the parallel code is limited to the memory of the node.
+			       In order to utilize the distributed memory architecture the \texttt{MPI} programming paradigm must be used.
+	\item \textbf{MPI:} The \textit{Message Passing Interface} was introduced in 1994\cite{rz}. The main idea behind message passing is to distribute the computational work of a program with
+			    large memory requirements across multiple nodes. These nodes communicate data only when necessary. To efficiently program distributed memory machines, the communication
+			    between computing nodes must be minimized. The \texttt{MPI} standard defines routines for sending and receiving messages between nodes. Each node will have its own 
+			    processors and memory, see figure (\ref{mpi}) for further illustration.
+			    \begin{figure}[h]
+					\centering\scalebox{0.7}{\input{mpi.tikz}}
+			       		\caption{MPI Distributed Memory Model.}
+			       		\label{mpi}
+			    \end{figure}
+			    The \texttt{MPI} approach is now the most widely used model to program parallel reservoir simulators. The reason for this widespread use of \texttt{MPI} is the common 
+			    technique of partitioning the reservoir into many subdomains and distributing the subdomains among the processors\cite{spe29139}. 
+			    Each processor works on a coefficient matrix with residual, the boundary data for the subdomains are duplicated among the processors sharing boundaries.
+			    Designers of parallel reservoir simulators need to identify communication bottlenecks. \texttt{MPI} programs usually scale better than \texttt{OpenMP}, this is due to 
+			    insufficient cache memory on a single processor.
+\end{itemize}
+
+\subsection{MIMD On The Heterogeneous Element Processor}
+In their 1987 study of parallel reservoir simulation, Scott, et al.\cite{spe16020} presented the parallelization of two time consuming tasks in reservoir simulation: Jacobian construction and linear solver.
+Their study was conducted on two parallel machines the \texttt{Heterogeneous Element Processor} computer produced by Denelcor and the Intel \texttt{iPSC Hypercube}. One intention of this paper was to show
+the potential of MIMD machines for reservoir simulation. The Jacobian construction for both black-oil and compositional types were presented and both direct and iterative linear solver methods were addressed 
+for parallelization. In forming the Jacobian matrix, the authors mention that when the simulator is performing table-lookup for PVT or saturation tables the operation can be divided among processors and performed
+in parallel. In compositional simulation, the phase equilibrium and fluid property calculations are amenable to parallelization.
+
+\subsection{Buckley-Leverett Problem On The \texttt{CM}}
+The work of Mayer\cite{spe19121}, discussed the parallelization of the explicit formulation of the Buckley-Leverett problem on the \texttt{Connection Machine}. The paper discussed the possibilities of different strategies
+of distribution of gridblocks among the processors. From centralized storage of relative permeability curves on a single node to possible distributions of well data among nodes. Communication among nodes is minimized by excluding processors holding information
+for inactive gridblocks. In this study, the largest size of the model used was over $8$ millions gridblock. The \texttt{Connection Machine} has $65 \ 636$ processors.
+
+\subsection{Wheeler and Smith \texttt{Hypercube}}
+One of the first attempts to design a reservoir simulator that utilizes the parallel programming paradigm was the research project carried by Wheeler and Smith\cite{spe19804}.
+The simulator was an implicit, 3-D, two phase (oil, water), and ran on the \texttt{Intel iPSC/2 Hypercube} supercomputer. This \texttt{Intel} machine is referred to as a cube since 
+the topological configuration of the computing nodes are similar to that of a cube, that is each computing node resides on the corner of the cube and cube edges are considered the 
+communication lines. The interprocess communication was performed using \texttt{FORTRAN} calls. The programming concepts that are needed to program such
+a simulator are related to computational grid partitioning and inter processor communications. The simulated reservoir model must be partitioned among the computing cores
+of the 16-node machine, and then the code for the different components of the simulator must be designed in a way that minimizes the communication between the processors.
+Communication is, of course, necessary between adjacent domains to send and receive boundary variables along shared gridblocks.
+The research work of Wheeler and Smith focused on implementing different parts of the simulator to run efficiently on parallel. Their research paper included a discussion of
+the linear solver, that was implement specifically for the parallel machine. The distribution of gridblocks among the processors is done vertically, that is each griblock along a vertical line
+through the computational domain is given entirely to a processor (Z-lines distribution strategy), see figure (\ref{cube}).
+
+\begin{figure}[h]
+	\centering\scalebox{0.5}{\input{cube.tikz}}
+	\caption{Z-lines Domain Partition.}
+	\label{cube}
+\end{figure}
+As in the vector processing machines introduced early, a knowledge of the computing machine architecture is also required to efficiently program the \texttt{Hpyercube} computer\cite{duchark}.
+However, the \texttt{Hypercube} computer started the revolution of developing reservoir simulators for distributed-memory machines. This enabled the run of larger model sizes and the spreading
+of code parallelization concepts that will prove essential later when programming high performance computers will become more and more architecture independent.
+
+\subsection{Parallel Compositional Reservoir Simulation}
+The work of Wheeler and Smith focused on black-oil type fluid models. Compositional fluid models were the focus area of John Killough and Rao Bhogeswara\cite{spe21208}. They based their studies on
+three reservoir models, an enlarged version of \textit{Third SPE Comparative Solution} problem, a highly hetrogenous problem and a hypothetical model. One important feature of the computing machine used in this study, the \texttt{iPSC/860}, is that no knowledge of the
+machine architecture and topology was required to program it. The study investigated the parallelization of the commercial simulator \textit{VIP-COMP} from Western Atlas Integrated Technologies. Only the IMPES option of the simulator was parallelized for the study. 
+The authors initially profiled the simulator and targeted most time consuming parts of the simulator. Jacobian construction and the linear solver were the most time consuming parts of the simulator. 
+The flash computations (PVT computations for the compositional fluid) were also time consuming. The coefficient matrix setup was reported to achieve excellent parallelization. The parallelization of data structures of the simulator was also necessary.
+The use of \texttt{Asynchronous} (nonblocking) message passing was also used in developing the simulator.
+
+\subsection{IMPES Compositional Simulator On \texttt{CM-2}}
+Published in 1992, Rutledge, et al., described an IMPES formulation with seven-point stencil discretization scheme simulator. The focus of the work was on techniques suitable for a SIMD machine. The simulator was designed to run on \texttt{Connection Machine-2}.
+The \texttt{CM-2} is a . The linear solver used in this simulator was the Generalized Minimum Residual iterative solver \texttt{GMRES}. The data structure used in this simulator partition the gridblocks including inactive ones to all processors. This may risk some
+processors to be (all-inactive gridblocks owner) that is an idle processor. The issue of replicating PVT and saturation table lookups is discussed. The solution undertaken in the study uses a feature of the \texttt{CM-2} machine. The tables are distributed among
+nearby groups of processors, this enables each processor in a 32-processor cluster to gather and assemble the table efficiently. This is possible by turning the table lookups to single point arithmetic precision, which is sufficient for table lookups of physical properties.
+In this study well terms were all treated on a single processor (the front end), as opposed to distributing wells among processors. The \texttt{CM-2} machine was invented before the MPI standard, therefore, the machine specific communication routines were used. These were the
+\texttt{NEWS} and \texttt{SEND} data communication routines, the first for nearest neighboring processor the second for communication between any two processors in the cluster. The use of the \texttt{SEND} was minimized to increase the performance of the simulator. However, the
+linear solver required the use of \texttt{SEND} routine.
+
+\subsection{Parallelization Of LGR And AIMP}
+This work discussed the paralellization of \textit{Local Grid Refinement} and \textit{Adaptive Implicit Schemes} in reservoir simulation. Both of these two features are employed in studying field models and cases where the application of fully-implicit fully refined reservoir models
+with limited computer resources is difficult. The fast-changing dynamic parts of the reservoir model, for example, near-wellbore regions, high permeability with fast flow regions and solvent fronts are refined or treated in a fully-implicit fashion. While, the other slowly varying regions
+of the reservoir are coarsened and treated explicitly. These two features raise an additional challenge to parallelization, since now computational demands vary from region to another in the reservoir. In their implementation of the Jacobian construction, cells are grouped according to their
+implicitness and only active cells are included. Vectorization of the inner loops in property calculations was also performed to gain an increase of performance. A further classification of gridblocks according to their fluid phase is also performed. For an illustration of Local Grid Refinement,
+see figure (\ref{lgr}).
+\begin{figure}[h]
+	\centering\scalebox{0.5}{\input{lgr.tikz}}
+	\caption{Local Grid Refinement Illustration.}
+	\label{lgr}
+\end{figure}
+
+\subsection{Statoil Parallel Reservoir Simulator On \texttt{MasPar MP-2}}
+This simulator is black-oil, two-phase, sequential implicit. It ran on a SIMD, $16 \ 384$ processors machine, named \texttt{MasPar MP-2}. It used Krylov subspace methods for linear solution of the system of equations. The pressure system is solved using a two level Additive Schwarz preconditioner. Other linear solution
+methods are also implemented in the simulator for coarse grid regions to enhance efficiency. The research pays attention to problems of numerical dispersion produced by the use of finite-difference discretization and upstream weighting. The general rules of thump principles were followed to design this parallel siimulator:
+data locality, domain decomposition, minimized communications and boundary data duplication between neighboring processors. The discretization method used in this simulator is the finite-element (Galerkin formulation). The Krylov space method used for the linear system is the Conjugate Gradients method. The saturation system
+is solved using a hyperbolic solver, that used the Modified Method Of Characteristics, this solver was inefficient when compared to the pressure solver. It consumed 4 times more than the pressure system. 
+
+\subsection{Amoco Falcon Parallel Reservoir Simulator}
+In 1998, Amoco published results regarding their simulator made in cooperation with Los Almos National Laboratory and Cray Research\cite{spe51969}. They report increased efficiency of run time as high as $100$ faster than previous vector machines. The simulator was written in \texttt{FORTRAN90} and follows the SIMD programming paradigm.
+The simulator was tested on multiple parallel platforms including \texttt{CRAY T3D}, \texttt{SGI Power Challenge}, \texttt{Origin 2000}, \texttt{CM-5} and \texttt{IBM SP2}. The linear solver is implemented as an incomplete lower-upper (ILU) preconditioner coupled with \texttt{GMRES} or \texttt{ORTHOMIN} as iterators.
+The authors report the ability of the simulator to run large (up to $16.5$ million gridblocks) scale simulations. The simulator uses the High Performance Fortran Extension (HPF) for communication among processors, in contrast to MPI. The simulator implements an Adaptive Implicit approach to mobility. Mobility can be treated explicitly,
+but this may increase the risk of instability of the simulation run. The simulator is compositional with two linear solver packages. The linear solver package is selected based on the type of simulation: Red/Black Z-line Successive Overlaxation (\texttt{SOR}) for IMPES and a Krylov \texttt{GMRES} or \texttt{ORTHOMIN} with \texttt{ILU} preconditioner for fully implicit.
+
+\subsection{Aramco First Reservoir Simulator \texttt{POWERS}}
+The salient feature of the in-house developed, \textit{Parallel Oil Water Enhanced Reservoir Simulator}\cite{spe75805} of Saudi Aramco is its robust ability to handle the some of the largest reservoir models in the industry. This requirement is expected since reservoirs sizes in Saudi Arabia are usually larger than reservoirs from other parts of the world. The engineers in Saudi Arabia
+started their work in reservoir simulation development by improving the performance of \textit{MARS} reservoir simulator developed by Exxon Production Research Company\cite{spe11483}. Their work on the \textit{MARS} simulator was mainly done on increasing vectorization and parallelization of the linear solver\cite{spe29856}. In 1996, Saudi Aramco deployed the $POWERS$
+simulator. It is typical for small and medium size reservoirs to have grid size of $50 / m$, however Middle East reservoirs with grid size of $250 / m$ produce models with $1$ million cells. Therefore, the aim of \texttt{POWERS} was to be able to handle megacell simulations with ease. The simulator is a three dimensional, three-phase, with generalized compositional
+formulation (black-oil is a specialized case) with the ability to define multiple PVT and saturation tables for different regions, that is it supports multiple equilibration regions. Two discretization methods are implemented: IMPES and the fully-implicit method. All of the main components of the simulator: Jacobian construction, linear solver, property calculations 
+are written in parallel. The simulator was ran on several High Performance Computing platforms: \texttt{CM-5, IBM-NH2, SGI Origin 3800}. The linear solver options of the simulator are generalized conjugate residual and Orthomin with truncated Neumann series as a preconditoiner. The simulator also featured: a Local Grid Refinement, a Well Management package, Integration to 
+Pre- and Post-processing software. The simulator is reported to reduce simulation time of giant reservoirs from days to hours.
+
+\subsection{Aramco Second Reservoir Simulator \texttt{GigaPOWERS}}
+The second generation Aramco simulator extended the capability of the previous one. It manages to run large model sizes of up to a bilion cells. It also provides a collection of features that were not available in the previous simulator. The new simulator was named \texttt{GigaPOWERS}, the same previous name prefixed with \texttt{Giga}, to indicate its 
+ability to run ($10^{9}$) cells. The simulator was deployed in 2009\cite{spe119272}. The new features added to the simulators include: a Distributed Unstructured Grid Infrastructure (enhanced parallel capability to handle unstructured grids), Complex Well Modeling (Multi-lateral wells with Inflow Control Vales and Devices), Dual-Porosity Dual-Permeability
+(to handle faults in a reservoir) and an improved linear solver that handles systems of equations resulting from unstructured grids more efficiently. The formulation used in the simulator is the generalized compositional formulation used previously in \texttt{POWERS}. The \texttt{GigaPOWERS} simulator also performs the reading and writing of input and output
+(IO) files in parallel. The simulator also supports the standard Corner Point Geometry (CPG): non-orthogonal structured grid used typically in reservoir simualtion, see figure (\ref{cpg}). Another important additon to the \texttt{GigaPOWERS} simulator is the development of an Optimizatoin Based Well Management. This enables the advanced treatment and handling of reservoir engineering
+production strategies, by solving a minimization problem internally. The simulator ran on different hardware environments: clusters with \texttt{Intel Xeon} and \texttt{AMD} processors, along with \texttt{IBM BlueGene/P} and \texttt{SGI Altix}.
+\begin{figure}[h]
+	\includegraphics[scale=0.12]{cpg.pdf}
+	\caption{Corner Point Geomtery For The Johansen Open Data Set. The dots show the coordinate lines of the reservoir\cite{johansen}.}
+	\label{cpg}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Massage Passing And Multi Processing}
+Usually simulators are developed to run on distributed memory machines and the MPI standard is used exclusively. The MPI standard is ideal for the development of reservoir simulators that will run large model sizes. Since the partitioning of the reservoir model will require each computing processor to have a memory to handle the data of the subdomain.
+It is also possible, and in many cases beneficial, to integrate different parallelization techniques within one simulator. For example, there are tasks in the reservoir simulator that are ideally parallelized using OpenMP standard. That is multi-threading within a single processor, or processor level parallelization. An example from reservoir simulation
+would be the handling of well computations, for large mulitlateral wells the compuational workload can be distributed among the threads in a singe computing core. This increases the efficiency of well computations and simulation time in general. Hybrid systems are common in todays parallel scientific computing and software.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Future Of Reservoir Simulation: Graphics Processing Units}
+The area of accelerating scientific computation using GPUs (Graphics Processing Units)  is one of the most intensive research areas in many compuational sceince and engineering fields. Reservoir simulation is no exception, the technology of GPUs is rapidly changing with researchers in computational science exploiting the latest advances in this area.
+When it firstly started to get the attension of simulation researchers, GPUs were considered peripheral devices used to accelerate the large numer of floating point arithemitic operations in a PC. They were ideal for single precision floating point arithmetics needed to render graphics on a computer. What distinguishes a GPU from a CPU is the availability 
+of a large number of specialized cores (cores with restricted set of machine instructions). On a computing machine a GPU will contain its own memory separate from the memory of the CPU and will communicate with the CPU through a Peripheral Component Interconnect Extension (PCIe)\cite{rz}. A GPU consists of relatively large number of workers (computing cores)
+when compared to the CPU, for example: \texttt{NVIDIA A100} has 108 compute units and \texttt{AMD Arcturus} has 120 compute units. Similar to the era when distributed memory, MPI programmed machines required a reprogramming and restructuring of reservoir simulators the GPUs come with their own new programming paradigm. Vendors either develop their own GPU
+programming language (low level programming language suitable for the GPU) or follow a standard GPU programming language. For example, the famous GPU vendor \texttt{NVIDIA} invented their own GPU programming language \texttt{CUDA}. \texttt{NVIDIA} GPUs can also be programmed using the \texttt{OpenCL} (Open Computing Language) standard
+supported by multiple GPUs vendors. For an illustration of the differences between the CPU and the GPU, see figure (\ref{gpu}).
+Some of the earliest attempt to integrate GPUs to reservoir simulation can be summarized below:
+
+\begin{itemize}
+	\item Many Core Advnaced Parallel Simulation (MAPS) (2011)\cite{spe141265}.
+	\item Implementation of Massively Paralle Nested Factorization (MPNF) (2011)\cite{spe141402}.
+	\item Schlumberger New Generation Reservoir Simulator Intersect(IX)\cite{spe93274}.
+	\item Aramco Next Generation GPU Based Simulator \texttt{TeraPOWERS}\cite{spe203918}.
+\end{itemize}
+These milestones will be briefly touched upon below.
+
+\subsection{A Hybrid Linear Solver}
+In 2011 Klie, et al.\cite{spe141265}, published their work that presents an implementation of a linear solver that utilizes both the multi-core CPU and many-cores GPU archiecture. This work was one of the earliest works in GPU integration in reservoir simulation development. The GPU used in their work is the \texttt{NVIDIA Fermi C2050}, this GPU contains
+14 streaming multiprocessors, each with 32 scalar processors, it totals to 448 cores (computing units). The performance results reported of this research are a reduction of runtime by a factor of two for compositional runs and a reduction in linear solver time by a factor of 3. The simulator developed is designed to adaptively select which CPU or GPU implemented
+parts to be run. The suite of solvers that were integrated on this hybrid system include: \texttt{GMRES, AMG, ILU(0), ILU(k), ILUT} in addition to others.
+
+\subsection{Schlumberger Experiments With GPUs On Their NF Algorithm}
+In 1983 Appleyard and Cheshire\cite{spe12264} published their famous preconditioner, the Nested Factorization , used in \texttt{ECLIPSE100} as the default preconditioner for the \texttt{ORTHOMIN} linear solver. In 2011, Appleyard, et al., publised the GPU implementation of this preconditioner\cite{spe141402}. The algorithm was called 
+\texttt{MPNF} (Massively Parallel Nested Factorization). It allowed a large portion of the work done by the algorithm to be carried out on the GPU to accellerate the overall runtime of the algorithm. The researchers report significant increase in performance when the \texttt{MPNF} is run for large ($>100 \ 000$) gridblocks. The authors
+also encourage the movement of other parts of the simulator, Jacobian construction and property calculations, to the GPU platform. The authors also emphasize the importance of incorporating \texttt{MPI} along with the GPU algorithm for maximizing possible gains from parallelism.
+
+\subsection{Schlumberger \texttt{Intersect(IX)} Reservoir Simulator}
+The GPU capabilities of the next generation reservoir simulator from Schlumberger was the result of collaboration between Schlumberger, Chevron and TotalEnergies. The \texttt{Intersect (IX)} simulator was designed with GPU support in mind. The simulator is written in \texttt{C++} programming language with the latest software engineering technologies to ensure 
+maintainability of the simulator. The linear solver, property calculations routines were implemented to run on the GPU platforms.
+
+\subsection{\texttt{TeraPOWERS} Aramco Next Generation Reservoir Simulator}
+Saudi Aramco researched the integration of the GPU techonlogy to their deployed in reservoir simulator \texttt{GigaPOWERS} in 2014\cite{spe163591}. The results obtained in this study indicated the need for significant changing of the exisiting code to gain any appreciable speed from the GPU architecure. Soon Saudi Aramco decided to commence the development of
+a new simulator named \texttt{TeraPOWERS}, the \texttt{Tera} prefix to mark its expected capability to run reservoir models as large as $10^{12}$ gridblocks. In 2021, the team working on this simulator published their current findings in using the GPU in developing the simulator\cite{spe203918}. The initial results reported is an order of magnitude improvement
+on simulation time for Saudi Aramco models. At the time of their writings, all main components of the simulator were moved to the GPU platform with the exception of gridding, initialization and domain decomposition. In other words, all recurrent code (executed every timestep) is moved the GPU platform. The Jacobian construction was thoroughly designed to fit the
+programming paradigm of the GPU.
+
+\begin{figure}[h]
+	\centering\scalebox{0.6}{\input{gpu.tikz}}
+	\caption{Schematic diagram showing the difference between the architecture of the CPU and the GPU.}
+	\label{gpu}
+\end{figure}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+The purpose of this paper was to give an overview of the history of the applications of high performance computing platforms in reservoir simulation. Beginning with the earliest supercomputers the vector machines and then moving to the currently standard distributed memory clusters and ending with the newly introduced GPU platforms. These different computing
+platforms can be considered as the past, present and future of large scale reservoir simulation. Reservoir simulators consistently utilized latest technologies in high performance computing, and will certainly continue this heritage.
+
+%%%%%%%%%%%%%  BIBLIOGRAPHY  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\nocite{*} %% <=== delete this line - unless you wish to typeset the entire contents of your .bib file.
+
+\bibliographystyle{asmejour}   %% .bst file that follows ASME journal format. Do not change.
+
+\bibliography{sweep} %% <=== change this to name of your bib file
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% To omit final list of figures and tables, use the class option [nolists]
+
+\end{document}
