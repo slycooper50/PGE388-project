@@ -5,9 +5,17 @@
 %\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz} 
 \usepackage{tikz-layers} 
+\usepackage{physics}
 \usetikzlibrary{calc, arrows.meta, intersections, patterns, positioning, shapes.misc, fadings, through,decorations.pathreplacing}
 \usetikzlibrary{positioning,shapes,arrows,backgrounds,external,fit,calc}
 \usetikzlibrary{shapes.geometric,shapes.arrows,fit,positioning}
+\usetikzlibrary{3d, arrows.meta, bending, calc, perspective}
+\usetikzlibrary{perspective}
+\usetikzlibrary{patterns,decorations.pathmorphing}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{calc}
+\tikzset{>=latex}
 \usepackage{array}
 \usepackage{pdfpages}
 
@@ -15,12 +23,12 @@
 
 \hypersetup{
 	pdfauthor={Ahmad Assadeq},                       		   	
-	pdftitle={History Of Vector And Parallel Reservoir Simulation},                  	
-	pdfsubject = {History Of Vector Parallel Reservoir Simulation},	
+	pdftitle={Koval Factor For A Five-Spot Pattern Using Reservoir Simulation}, 
+	pdfsubject = {Koval Factor For A Five-Spot Pattern Using Reservoir Simulation},
 }
 
 %\JourName{Ms Report}
-\PreprintString{PGE383 Paper}[R]
+\PreprintString{PGE388 Advanced Reservoir Engineering Project}[R]
 \PreprintString{}[L]
 
 \begin{document}
@@ -30,17 +38,16 @@
    Austin, Texas, USA\\
    aoa442@my.utexas.edu} 
 
-\title{Historical Overview Of Vector And Parallel Reservoir Simulation}
+\title{Koval Factor For A Five-Spot Pattern Using Reservoir Simulation}
 
-\keywords{Parallel Reservoir Simulation, High Performance Computing, Massively Parallel, Multicore Computation.}
+\keywords{Reservoir Engineering, Koval Factor, Waterflooding, Immiscible Displacement.}
    
 \begin{abstract}
-	The history of parallel reservoir simulation can be traced back to the 1990s, when the first 
-	parallel reservoir simulator, developed to run on Intel \texttt{iPSC/2} Hypercube Distributed-Memory Scientific Computer,
-	was invented by John Wheeler and Richard Smith\cite{spe19804}. Ever since, the advancements in High-Performace computing
-	influenced the developments of evermore scalable and parallel reservoir simulators. Newly developed parallel simulators
-	are capable of simulating complex multiphysics subsurface phenomena without sacrificing the detailed resolution of 
-	geological models.
+	The Koval method was invented in 1963 to tackle the issue of viscous fingering and early breakthrough
+	of solvent injected in the reservoir. However, the method can be extended to immiscible flood if the 
+	segregated flow condition is satisfied. 
+	The \textit{MATLAB Reservoir Simulation Toolbox} is used to simulate a Homogeneous Quarter Five-Spot 
+	to find the best fit for .
 \end{abstract}
 							
 \maketitle %% This command creates the author/title/abstract block. Essential!
@@ -48,145 +55,83 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}
-The history of parallel reservoir simulation follows closely developments in high performance computing. The first milestone achieved in developing high performing, fast and robust reservoir simulation code was in the 1980s, when ARCO Oil and Gas Company started
-converting its simulator to run on the \texttt{CRAY-1S} vector processor machine\cite{spe10521}. Vector processing machines are considered among the first machines to be designed specifically for accelerating scientific computing. They work by performing arithmetic 
-operations collectively on a group of values (similar to the operation of applying a scalar multiplication on a vector). Today, the technology of computing machines have advanced greatly, and so accordingly did the technology of reservoir simulators.
-The technology of high performance computing machines is famously categorized using \textit{Flynn's Taxonomy}. In this classification, four major programming paradigms are recognized\cite{spe16020}:
-\begin{enumerate}
-	\item SISD: Single Instruction Single Data.
-	\item SIMD: Single Instruction Multiple Data.
-	\item MISD: Multiple Instruction Single Data.
-	\item MIMD: Multiple Instruction Multiple Data.
-\end{enumerate}
-The vector processing machines can be categorized under the \texttt{SIMD}, since one arithmetic operation is performed on multiple data simultaneously.
-The next milestone in the parallel reservoir simulation development happend in the 1990s, when Wheeler and Smith\cite{spe19804} developed the first parallel reservoir simulator.
-This parallel simulator was developed in a distributed-memory machine, the \texttt{Intel iPSC/2 Hypercube}. This machine contained 16-node (16 computing units that can be utilized).
-Since the 1990s, more parallel technologis were introduced to the reservoir simulation world, such as: \texttt{OpenMP} (Open Multi-Processing), \texttt{MPI} (Message Passing Interface) and most recently \texttt{GPU} (Graphics Processing Unit) programming.
+The prediction of oil production is related to the multiphase fluid flow in porous media. This physical phenomena
+is complicated due to the nonlinearity of the problem. Fluid dynamics of the flow is affected by the viscosity
+and density ratios of the fluids present, relative permeability and capillary pressure also introduce additional challenges.
+In the case of a displacing fluid having higher relative permeability it will move rapidly into the resident fluid and produce
+shock fronts and rarefaction waves. These would result in early breakthrough for homogenous reservoirs and viscous fingering in 
+hetrogeneous ones. \textit{Viscous fingering} is the unevenly displacement of one fluid by another. 
 
-\subsection{Why Is Computing Power Important In Reservoir Simulation}
-The availability of powerful computing machines and technology is essential to model complex physical phenomena. Model sizes and complexity usually scale in accordance with available computing power.
-For large oil and gas reservoirs, computing power is essential to simulate any realistic physics, this large computing power helps reduce the upscaling effects needed to convert the built geomodel to the simulation model.
-Large computing power also enables the simulation of detailed reservoir heterogeneity, complex reservoir engineering workflows, complex and optimized well management strategies and compositional and reactionary transport processes.
-Moreover, the simulation time can be heavily reduced by the use of parallel computing technology\cite{spe142297}. Simulation time is an important factor that effects the reservoir engineer workflow and the electrical power consumption of the
-computing clusters.
+\subsection{Areal Sweep Efficiency}
 
-\subsection{The Timeline Of Parallel Reservoir Simulation}
-The history, present and future of parallel reservoir simulation can be summarized in figure (\ref{timeline}). The paper will discuss each era in brief detail, and will go through advantages that took place in each era.
 \begin{figure}[h]
-	\input{timeline.tikz}
-	\caption{Timeline Of High Performing Reservoir Simulators.}
-	\label{timeline}
+	\centering\scalebox{1}{\input{koval.tikz}}
+	\caption{Heterogeneous layered reservoir.}
+	\label{heterogeneous}
 \end{figure}
+
+\begin{equation}
+	F = \frac{\sum_{i=1}^{n}k_{i}h_{i}}{\sum_{i=1}^{N}k_{i}h_{i}}
+\end{equation}
+
+\begin{equation}
+	C = \frac{\sum_{i=1}^{n}\phi_{i}h_{i}}{\sum_{i=1}^{N}\phi_{i}h_{i}}
+\end{equation}
+
+\begin{itemize}
+	\item [$F$] Flow capacity.
+	\item [$C$] Storage capacity.
+	\item [$N$] Total number of layers in the reservoir.
+	\item [$n$] A number between $1$ and $N$.
+\end{itemize}
+
+\begin{equation}
+	F = \frac{1}{1 + \frac{(1-C)}{H_{K}C}}
+\end{equation}
+
+\subsection{Koval Modifiction For Heterogenous Systems}
+Koval theory is used to predict solvent cut and oil recovery in a miscible displacement as a function of the pore volumes of solvent injected into a core \cite{salazar}.
+The Koval method describes heterogeneity by a factor $K_{V}$, the $K_{V}$ is a product of the heterogeneity effects  $H_{K}$ and 
+an effective mobility ratio $E$. Koval's method is a simple estimation of oil recovery and solvent in a miscible displacement as a
+function of the pore volumes of solvent injected into a core. If the flow is segregated between the displacing and resident fluid
+the Koval method can also be applied for any kind of displacement.
+
+\subsection{Advantages Of Simulating Areal Sweep Problems}
+The combination of physical effects on areal sweep is not very clear. Gravity segregation can force fluids with different density
+to segregate. Capillary forces tend to spread out the interface between different fluids. Adding heterogeneity makes the prediction 
+fluid movement in the reservoir very complicated without using numerical simulation. In some cases, the different forces can combine to 
+reduce the sweep and displacement efficiency, and in others they can reduce the fingering and delay the breaktrhough.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Vector Processing Machines Era}
-The 1980s was the decade of Vector Processing Reservoir Simulators. Some of the most important developments, related to reservoir simulation, on these machines are:
-\begin{itemize}
-	\item Simulation of Prudhoe Bay field using the \texttt{STAR-100}\cite{spe8330}.
-	\item Simulation of 3D, three-phase, black-oil models on \texttt{CYBER 203}\cite{spe9644}.
-	\item Vectorization of \textit{D4 Gaussian Elimination} and \textit{Successive Overrelaxation} on \texttt{STAR-100} and \texttt{CYBER 203}\cite{spe7675}.
-	\item ARCO Oil and Gas Company Simulates both black-oil and compositional flow on \texttt{CRAY-1S}\cite{spe10521}.
-\end{itemize}
-Vectorization is the process by which CPUs operate on chunks of data collectively, see figure (\ref{vec}). 
-To utilize the vector processing capabilities of a CPU, the programmer must recognize parts of the code where an operation can be performed simultaneously on a collection of data.
-
+\section{MRST Simulation Of Quarter-Five Spot}
+To investigate the problem of finding the best Koval-Factor for a Five-spot pattern with uniform permeability, 
+the \textit{MATLAB Reserservoir Simulation Toolbox} (\texttt{MRST}) will be used for simulation. This collection
+of \texttt{MATLAB} modules and code snippets for simulation different typical reservoir engineering problems is 
+a good starting point for research on reservoir simulation projects. The library already has code snippets for
+simulating a \textit{Homogeneous Quarter Five-Spot}\cite{mrst}.
 \begin{figure}[h]
-	\hspace*{-2cm}
-	\hbox{\input{vec.tikz}}
-	\caption{Comparison between performing arithmetic operations on a scalar versus vector machine.}
-	\label{vec}
+	\centering\scalebox{0.8}{\input{five.tikz}}
+	\caption{A repeated five-spot pattern.}
+	\label{fivespot}
 \end{figure}
+The \textit{repeated five-spot pattern}, which consists of a thin, infinitely large, horizontal reservoir with a staggered
+pattern of injection and production wells as \ref{fivespot} that repeats itself to infinity in all directions. By fixing the 
+rates for all wells the flow pattern has certain symmetries and its common to consider one tile subject to no-flow boundary
+conditions.
 
-\subsection{The Prudhoe Bay Simulator}
-The incorporation of vector processing machines in the oil and gas industry started when Mrosovsky, Wong and Lampe\cite{spe8330} developed a large field reservoir simulator on the \texttt{STAR 100} vector machine.
-The physical dimensions of the Prudhoe Bay field are an area of $647500 \ m^{2}$ and thickness of $168 \ m$. The simulation model is divided into a reservoir region (Sadlerochit formation) and an aquifer region. The simulator developed handles the reservoir 
-region as a three-phase, fully implicit in pressure and saturation model. The aquifer region is handled, differently, as a two-dimensional, one-phase aquifer model.  The power of the vector machine was used
-in the solution of the linear system of equations constructed from the discretization of the flow equations using the finit-difference technique. The LSOR (Line Successive Overrelaxation) method is used for the solution of the system of equations. The
-Z-line variable ordering strategy is followed in this simulator. Since the model of the Prudhoe Bay reservoir utilized 12 layers, a total of $(12 \ gridblocks \times 3 \ phases) = 36$ variables are solved per vertical line. The vectorization of the problem was
-performed by collecting variables of a vertical line to form a vector. 
+A single phase quarter five-spot can be formulated as solving $-\nabla \cdot (\mathbf{\vec{K}}\nabla p) = q$ with no-flow boundary
+conditions and two source terms at diagonally opposite corners of a 2D Cartesian grid covering a $500\times500$ $m^{2}$ area.
+The rectangular grid has homogeneous petrophysical properties ($K= 100$ mD and $\phi = 0.2$). The purpose of this example is to:
 
-\subsection{Nolen Vector Reservoir Simulator}
-James Nolen published work in 1981, that describes the development of a fully-implicit reservoir simulator that utilizes the power of vector processing machines\cite{spe9644}.
-The overall increase in performance reported in this simulator is a factor of $3.7$ when compared to the same computations carried on a scalar machine. The prominent feature of this work is the substantial
-vectorization of many components of the reservoir simulator. Some of the components this work presents for vectorization are:
-\begin{itemize}
-	\item \textbf{\texttt{IF} statements}: Conditional statements in the simulator can be replaced by vectors. Truth values are stored as $1$/$0$ in a vector.
-	\item \textbf{Data Reordering}: In parts of the simulator where data in a vector is to be reordered an index vector \texttt{J} is used to reorder effiecently:
-		\texttt{A(I) = B(J(I))}.
-	\item \textbf{Table Lookups}: Physical properties that are functions of pressure or other state variables are also vectorized.
-	\item \textbf{Linear Solver:} The linear solver of the resulting system is vectorized.
-\end{itemize}
-
-
-\subsection{Vectorization Of Linear Solvers}
-In 1981, James Nolen, et al.\cite{spe7675} published their work in vectorizing the linear solvers used in reservoir simulation at the time.
-The results published in their work gives promising performance improvement with factors as large as $54$.
-The linear solver is known to take most of the simulation time. Therefore, a concentrated effort to vectorize linear solver routines will
-improve overall performance, even if only the solver part of the simulator is vectorized. The work of Nolen, et al. describes an optimal vectorization of the \textit{Gaussian Elimination With D4 Ordering} method along with \textit{Successive Overrelaxation} method.
-The vectorization of the \textit{D4} ordering is optimally done by the replacement of inner-product operations by vector multiplications.
-Variants of the \textit{SOR} method differ based on the number of gridblocks treated simultaneously (point, line, two-line, plane SOR).
-The \textit{SOR} method was vectorized by renumbering the gridblocks, that is by changing the order of variables to change the structure of the matrix.
-This change of variables order enables the construction of longer vectors to be operated on inside the \textit{SOR} routines.
-
-\subsection{ARCO Vectorization Of A Reservoir Simulator}
-Another early attempt to improve performance of reservoir simulators using high performance computing technologies was the Killough and Levesque\cite{spe10521} effort to convert both of their simulation models, black-oil and compositional types,
-to the vector processing computer \texttt{CRAY-1S}. In the work of Killough\cite{spe10521}, the Strongly Implicit Solution technique was vectorized for the Black-Oil model along
-with vectorization for table lookups. The reported increase in performance in their work is about a factor of four in overall CPU time for heterogeneous models. Vectorization was also carried out on Jacobian matrix construction and
-explicit calculations of the saturation. The challenges encountered during this conversion were the need to understand some low level details of the \texttt{CRAY-1S}, in order to vectorize parts of the simulator. Vectorization of these parts were done
-using the \texttt{Cray Assembly Language}. Programming in a machine specific language endangers portability of code to other machines.
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Advent Of Distributed-Memory Clusters}
-The 1990s was the decade that saw several distributed-memory reservoir simulators. Examples are:
-\begin{itemize}
-	\item \texttt{The Heterogeneous Element Processor (HEP)} (1987)\cite{spe16020}.
-	\item Application Of The \textit{Connection Machine} To The Buckley-Leverett Problem (1989)\cite{spe19121}.
-	\item \texttt{Intel iPSC/2 Hypercube} (1990)\cite{spe19804}.
-	\item \texttt{Intel iPSC/860 Hypercube} (1992)\cite{spe21208,spe6830}.
-	\item Development Of Implicit-Pressure Explicit-Saturation (IMPES) Simulator On \texttt{Connection Machine-2} (1992)\cite{spe21213}.
-	\item Parallel algorithm for \textit{Local Grid Refinement} on \texttt{CRAY X-MP} (1993)\cite{spe25258}.
-	\item Statoil and University Of Bergen Reservoir Simulator On \texttt{MasPar MP-2} (1995)\cite{spe29139}.
-	\item Amoco \texttt{Falcon} Simulator (1998)\cite{spe51969}.
-	\item Saudi Aramco First Parallel Simulator \texttt{POWERS} on \texttt{Connection Machine-5} (1996)\cite{spe51886}.
-	\item Saudi Aramco Second Parallel Simulator \texttt{GigaPOWERS} Tested On Different Hardware Platforms (2009)\cite{spe119272}.
-\end{itemize}
-
-It would be beneficial to give a brief description of two important standards used to implement parallelism in reservoir simulation. The two Application Programming Interfaces (APIs) are:
 \begin{enumerate}
-	\item \texttt{OpenMP API}: Open Multi-Processing Standard, used for creating shared memory parallel programs using threads.
-	\item \texttt{MPI API}: Message Passing Interface Standard, used for creating programs that run on several computing nodes and communicate through messages.
+	\item In addition to computing pressure, we will also compute streamlines from
+	\item the flux field as well as the corresponding time-of-flight, i.e., the
+	\item time it takes for a neutral particle to travel from a fluid inlet (source
+	\item term, well, inflow boundary, etc) to a given point in the reservoir.
 \end{enumerate}
 
-\begin{itemize}
-	\item \textbf{OpenMP:} This standard was introduced in 1997\cite{rz}. The feature of this standard is that it provides an easy and quick way to introduce
-			       parallelism in a program. It is effective for parts of code that have excessive number of loops.
-			       The standard categorizes variables as either private or shared. Private variables are specific to the thread that declared the variable.
-			       While shared variables are visible and modifiable by all threads.
-			       For an illustration of this technique for shared memory parallelization see figure (\ref{openmp}).
-			       \begin{figure}[h]
-			       		\center\input{openmp.tikz}
-			       		\caption{OpenMP Multi-Platform, shared memory, Model.}
-			       		\label{openmp}
-			       \end{figure}
-			       The \texttt{OpenMP} standard parallelizes the code on a single node level, therefore the scalability of the parallel code is limited to the memory of the node.
-			       In order to utilize the distributed memory architecture the \texttt{MPI} programming paradigm must be used.
-	\item \textbf{MPI:} The \textit{Message Passing Interface} was introduced in 1994\cite{rz}. The main idea behind message passing is to distribute the computational work of a program with
-			    large memory requirements across multiple nodes. These nodes communicate data only when necessary. To efficiently program distributed memory machines, the communication
-			    between computing nodes must be minimized. The \texttt{MPI} standard defines routines for sending and receiving messages between nodes. Each node will have its own 
-			    processors and memory, see figure (\ref{mpi}) for further illustration.
-			    \begin{figure}[h]
-					\centering\scalebox{0.7}{\input{mpi.tikz}}
-			       		\caption{MPI Distributed Memory Model.}
-			       		\label{mpi}
-			    \end{figure}
-			    The \texttt{MPI} approach is now the most widely used model to program parallel reservoir simulators. The reason for this widespread use of \texttt{MPI} is the common 
-			    technique of partitioning the reservoir into many subdomains and distributing the subdomains among the processors\cite{spe29139}. 
-			    Each processor works on a coefficient matrix with residual, the boundary data for the subdomains are duplicated among the processors sharing boundaries.
-			    Designers of parallel reservoir simulators need to identify communication bottlenecks. \texttt{MPI} programs usually scale better than \texttt{OpenMP}, this is due to 
-			    insufficient cache memory on a single processor.
-\end{itemize}
+The discretization and solution in this example uses the simple \textit{Two-Point Flux Approximation} (TPFA).
+
 
 \subsection{MIMD On The Heterogeneous Element Processor}
 In their 1987 study of parallel reservoir simulation, Scott, et al.\cite{spe16020} presented the parallelization of two time consuming tasks in reservoir simulation: Jacobian construction and linear solver.
@@ -212,11 +157,6 @@ The research work of Wheeler and Smith focused on implementing different parts o
 the linear solver, that was implement specifically for the parallel machine. The distribution of gridblocks among the processors is done vertically, that is each griblock along a vertical line
 through the computational domain is given entirely to a processor (Z-lines distribution strategy), see figure (\ref{cube}).
 
-\begin{figure}[h]
-	\centering\scalebox{0.5}{\input{cube.tikz}}
-	\caption{Z-lines Domain Partition.}
-	\label{cube}
-\end{figure}
 As in the vector processing machines introduced early, a knowledge of the computing machine architecture is also required to efficiently program the \texttt{Hpyercube} computer\cite{duchark}.
 However, the \texttt{Hypercube} computer started the revolution of developing reservoir simulators for distributed-memory machines. This enabled the run of larger model sizes and the spreading
 of code parallelization concepts that will prove essential later when programming high performance computers will become more and more architecture independent.
@@ -245,7 +185,7 @@ of the reservoir are coarsened and treated explicitly. These two features raise 
 implicitness and only active cells are included. Vectorization of the inner loops in property calculations was also performed to gain an increase of performance. A further classification of gridblocks according to their fluid phase is also performed. For an illustration of Local Grid Refinement,
 see figure (\ref{lgr}).
 \begin{figure}[h]
-	\centering\scalebox{0.5}{\input{lgr.tikz}}
+	%\centering\scalebox{0.5}{\input{lgr.tikz}}
 	\caption{Local Grid Refinement Illustration.}
 	\label{lgr}
 \end{figure}
@@ -277,7 +217,7 @@ ability to run ($10^{9}$) cells. The simulator was deployed in 2009\cite{spe1192
 (IO) files in parallel. The simulator also supports the standard Corner Point Geometry (CPG): non-orthogonal structured grid used typically in reservoir simualtion, see figure (\ref{cpg}). Another important additon to the \texttt{GigaPOWERS} simulator is the development of an Optimizatoin Based Well Management. This enables the advanced treatment and handling of reservoir engineering
 production strategies, by solving a minimization problem internally. The simulator ran on different hardware environments: clusters with \texttt{Intel Xeon} and \texttt{AMD} processors, along with \texttt{IBM BlueGene/P} and \texttt{SGI Altix}.
 \begin{figure}[h]
-	\includegraphics[scale=0.12]{cpg.pdf}
+	%\includegraphics[scale=0.12]{cpg.pdf}
 	\caption{Corner Point Geomtery For The Johansen Open Data Set. The dots show the coordinate lines of the reservoir\cite{johansen}.}
 	\label{cpg}
 \end{figure}
@@ -326,7 +266,7 @@ on simulation time for Saudi Aramco models. At the time of their writings, all m
 programming paradigm of the GPU.
 
 \begin{figure}[h]
-	\centering\scalebox{0.6}{\input{gpu.tikz}}
+	%\centering\scalebox{0.6}{\input{gpu.tikz}}
 	\caption{Schematic diagram showing the difference between the architecture of the CPU and the GPU.}
 	\label{gpu}
 \end{figure}

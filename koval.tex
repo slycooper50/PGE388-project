@@ -1,0 +1,50 @@
+\documentclass[tikz,border=3mm]{standalone}
+\usetikzlibrary{perspective}
+\makeatletter
+\tikzset{recycle bounding box/.style={%
+execute at end picture={%
+\immediate\write\@mainaux{\xdef\string\tikz@bbox@figbb@#1{%
+{\the\pgf@picminx,\the\pgf@picminy,\the\pgf@picmaxx,\the\pgf@picmaxy}}\relax}},
+execute at begin picture={%
+\ifcsname tikz@bbox@figbb@#1\endcsname
+ \edef\figbb{\csname tikz@bbox@figbb@#1\endcsname}%
+ \path ({\figbb[0]},{\figbb[1]})  ({\figbb[2]},{\figbb[3]});
+\fi}}}  
+\makeatother
+\tikzset{pics/3d layer/.style={code={
+ \def\pv##1{\pgfkeysvalueof{/tikz/3d layer/##1}}
+ \tikzset{/tikz/3d layer/.cd,#1}
+ \path[3d layer/all,3d layer/fore] (-\pv{x}/2,-\pv{y}/2,-\pv{z}/2)
+    -- (\pv{x}/2,-\pv{y}/2,-\pv{z}/2)
+    -- (\pv{x}/2,-\pv{y}/2,\pv{z}/2)
+    -- (-\pv{x}/2,-\pv{y}/2,\pv{z}/2) -- cycle;
+ \path[3d layer/all,3d layer/side] (\pv{x}/2,-\pv{y}/2,-\pv{z}/2)
+    -- (\pv{x}/2,\pv{y}/2,-\pv{z}/2)
+    -- (\pv{x}/2,\pv{y}/2,\pv{z}/2)
+    -- (\pv{x}/2,-\pv{y}/2,\pv{z}/2) -- cycle;
+ \path[3d layer/all,3d layer/top] (-\pv{x}/2,-\pv{y}/2,\pv{z}/2)
+    -- (\pv{x}/2,-\pv{y}/2,\pv{z}/2)
+    -- (\pv{x}/2,\pv{y}/2,\pv{z}/2)
+    -- (-\pv{x}/2,\pv{y}/2,\pv{z}/2) -- cycle;
+ }},
+ 3d layer/.cd,x/.initial=2,y/.initial=2,z/.initial=0.2,
+ fore/.style={},
+ side/.style={},
+ top/.style={},
+ all/.style={draw,fill=blue!20},
+ }
+\begin{document}
+\foreach \Z in {1,...,1}
+{\begin{tikzpicture}[line join=round,recycle bounding box=A]
+\begin{scope}[3d view={30}{10},declare function={mu=1+\Z/20;
+    zboundary=0.1;zfluid=0.2;}]
+ \def\Nlayer{6} 
+ \path pic{3d layer={all/.append style={fill=gray!60},z=zboundary}}
+ foreach \Y in {0,...,\Nlayer}
+ {(0.1*\Y/mu,0,zboundary+\Y*zfluid) pic{3d layer={z=zfluid}}}
+ (0.1*\Nlayer/mu,0,\Nlayer*zfluid+zfluid) 
+ pic{3d layer={all/.append style={fill=gray!60},z=zboundary}}
+ ;
+\end{scope} 
+\end{tikzpicture}}
+\end{document}
